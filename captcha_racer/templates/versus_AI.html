@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Mode - Captcha Racer</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <title>Survival Mode</title>
 </head>
 <body>
     <header>
-        <h1>Survival Mode</h1>
+        <h1>Multiplayer Mode</h1>
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
@@ -20,12 +20,14 @@
     </header>
 
     <main>
-        <h2>Select Your Difficulty</h2>
-        <div class="game-modes">
-            <a href="/solo/survival/easy" class="button">🌟 Easy <br>(5 Mistakes)</a>
-            <a href="/solo/survival/medium" class="button">🔥 Medium <br>(3 Mistakes)</a>
-            <a href="/solo/survival/hard" class="button">💀 Hard <br>(1 Mistake)</a>
-        </div>
+        <section id="multiplayer">
+            <h2>Compete Against Others in Real Time</h2>
+            <p>Choose a game mode to join a multiplayer session:</p>
+            <div class="game-modes">
+                <a href="/vs-ai/1-vs-AI" class="button">🏆 1 vs AI</a>
+                <a href="/vs-ai/race-the-ai" class="button">⏱ Race the AI</a>
+            </div>
+        </section>
     </main>
 
     <footer>

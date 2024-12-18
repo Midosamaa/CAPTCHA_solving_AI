@@ -126,7 +126,7 @@ footer {
 
 #feedback {
     font-size: 1.5rem;
-    color: #32ff7e;
+    color: #d8eee0;
     animation: fadeIn 0.5s ease;
 }
 
@@ -233,15 +233,47 @@ form input {
     height: 15rem;
     align-items: center;
 }
-/* #game-over-popup button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
+#game-over-popup-ai {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+    width: 15rem;
+    height: 15rem;
+    align-items: center;
 }
-#game-over-popup button:hover {
-    background-color: #45a049;
-} */
+/* AI Stats Card */
+.ai-stats {
+    position: absolute;
+    bottom: 40%;
+    right: 5%;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    width: 15rem;
+    height: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.ai-stats p {
+    margin: 5px 0;
+}
+
+.ai-stats strong {
+    color: #343a40;
+}
+
+.ai-stats span {
+    font-weight: bold;
+    color: #495057;
+}

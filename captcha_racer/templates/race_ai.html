@@ -8,12 +8,11 @@
 </head>
 <body>
     <header>
-        <h1>Timer Challenge Mode</h1>
+        <h1>AI Racing Mode</h1>
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/solo">Solo Mode</a></li>
-                <!-- <li><a href="/multiplayer">Multiplayer</a></li> -->
                 <li><a href="/vs-ai">Versus AI</a></li>
             </ul>
         </nav>
@@ -21,8 +20,7 @@
 
     <main>
         <div id="game-area">
-            <h2>Timer Challenge Mode</h2>
-
+            <h2>AI Racing Mode</h2>
             <p>Time Remaining: <span id="timer">{{ session['timer'] }}</span> seconds</p>
             <p>Score: <span id="score">{{ session['score'] }}</span></p>
             
@@ -37,13 +35,19 @@
             
             <p id="feedback" style="color: #d8eee0;"></p>
 
-            <!-- Game over popup -->
-            <div id="game-over-popup">
+            <div id="game-over-popup-ai" style="display: none;">
                 <h2>Game Over!</h2>
                 <p>Your final score: <span id="final-score">{{ session['score'] }}</span></p>
+                <p>AI final score: <span id="ai-final-score">{{ session['ai_score'] }}</span></p>
                 <button class="button" onclick="restartGame()">Play Again</button>
             </div>
         </div>
+        
+        <section id="ai-stats" class="ai-stats">
+            <h3>AI Stats</h3>
+            <p><strong>AI Score:</strong> <span id="ai-score">{{ session['ai_score'] }}</span></p>
+            <p><strong>AI Feedback:</strong> <span id="ai-feedback" style="color: blue;">Waiting...</span></p>
+        </section>
     </main>
 
     <footer>
@@ -54,10 +58,13 @@
         let timer = {{ session['timer'] }};
         const timerElement = document.getElementById('timer');
         const scoreElement = document.getElementById('score');
+        const aiScoreElement = document.getElementById('ai-score');
         const captchaImage = document.getElementById('captcha-image');
         const feedbackElement = document.getElementById('feedback');
-        const gameOverPopup = document.getElementById('game-over-popup');
+        const aiFeedbackElement = document.getElementById('ai-feedback');
+        const gameOverPopup = document.getElementById('game-over-popup-ai');
         const finalScoreElement = document.getElementById('final-score');
+        const aiFinalScoreElement = document.getElementById('ai-final-score');
     
         // Countdown logic
         const countdown = setInterval(() => {
@@ -77,7 +84,7 @@
             // Get user input
             const formData = new FormData(this);
     
-            fetch('/verify', {
+            fetch('/vs-ai/verify', {
                 method: 'POST',
                 body: formData
             })
@@ -91,7 +98,9 @@
                 // Update score and feedback
                 feedbackElement.textContent = data.feedback;
                 scoreElement.textContent = data.score;
-    
+                aiScoreElement.textContent = data.ai_score;
+                aiFeedbackElement.textContent = data.ai_feedback;
+
                 // Update CAPTCHA image
                 captchaImage.src = data.captcha_image;
 
@@ -120,7 +129,7 @@
 
         // Function to restart the game
         function restartGame() {
-            window.location.href = '/solo/timer/start';  // Redirect to start a new game
+            window.location.href = '/vs-ai/race-the-ai';  // Redirect to start a new game
         }
     </script>
 </body>

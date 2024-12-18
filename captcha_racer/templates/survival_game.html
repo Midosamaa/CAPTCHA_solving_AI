@@ -13,6 +13,8 @@
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/solo">Solo Mode</a></li>
+                <!-- <li><a href="/multiplayer">Multiplayer</a></li> -->
+                <li><a href="/vs-ai">Versus AI</a></li>
             </ul>
         </nav>
     </header>
@@ -34,20 +36,22 @@
 
             <p>Score: <span id="score">{{ session['score'] }}</span></p>
 
+            <p>PROVE YOU ARE A FUCKING HUMAN OKAY?</p>
             <div>
                 <img id="captcha-image" src="{{ url_for('captcha') }}" alt="Captcha Image" />
             </div>
-
+            
             <form id="captcha-form">
                 <input type="text" name="captcha_input" required />
                 <button class="button" type="submit">Submit</button>
             </form>
             
-            <p id="feedback" style="color: red;">{{ feedback }}</p>
+            <p id="feedback" style="color: #d8eee0;">{{ feedback }}</p>
 
             <!-- Game over popup -->
             <div id="game-over-popup" style="display: none;">
                 <h2>Game Over!</h2>
+                <p>You are a disgrace to humanity XD... even our AI is better than you</p>
                 <p>Your final score: <span id="final-score">{{ session['score'] }}</span></p>
                 <button class="button" onclick="window.location.href='/solo/survival'">Play Again</button>
             </div>

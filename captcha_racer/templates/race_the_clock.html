@@ -44,6 +44,30 @@
                 <button class="button" onclick="restartGame()">Play Again</button>
             </div>
         </div>
+        <div id="op-game-area">
+            <h2>Opponent Window</h2>
+
+            <p>Time Remaining: <span id="timer">{{ session['timer'] }}</span> seconds</p>
+            <p>Score: <span id="op-score">{{ session['score'] }}</span></p>
+            
+            <div>
+                <img id="captcha-image" src="{{ url_for('captcha') }}" alt="Captcha Image" />
+            </div>
+
+            <form id="captcha-form">
+                <input type="text" name="captcha_input" required placeholder="Enter CAPTCHA" />
+                <button class="button" type="submit">Submit</button>
+            </form>
+            
+            <p id="feedback" style="color: #d8eee0;"></p>
+
+            <!-- Game over popup -->
+            <div id="game-over-popup">
+                <h2>Game Over!</h2>
+                <p>Your final score: <span id="final-score">{{ session['score'] }}</span></p>
+                <button class="button" onclick="restartGame()">Play Again</button>
+            </div>
+        </div>
     </main>
 
     <footer>
