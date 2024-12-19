@@ -29,26 +29,23 @@ class ThreadAI(Thread):
 
 
 
-def f():
-    # ...
+# def f():
+#     # ...
 
-    global ai_thread
-    captcha_path = "caps/baI05.png"
-    char_num = 5
-    ai_thread = ThreadAI(target=model.predictImage, args=(captcha_path, char_num,))
-    ai_thread.start()
+#     global ai_thread
+#     captcha_path = "caps/baI05.png"
+#     char_num = 5
+#     ai_thread = ThreadAI(target=model.predictImage, args=(captcha_path, char_num,))
+#     ai_thread.start()
 
-    # ...
+#     # ...
 
-def r():
-    # ...
+# def r():
+#     # ...
 
-    print(ai_thread.join())
+#     print(ai_thread.join())
 
-    # ...
-
-f()
-r()
+#     # ...
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -203,7 +200,8 @@ def verify_vs_ai():
 
         # AI solving CAPTCHA
         captcha_path = os.path.join(app.static_folder, 'images/captcha', f"{session['captcha_text']}.png")
-        ai_answer = model.predictImage(captcha_path, 5)
+        ai_answer = ai_thread.join()
+        # ai_answer = model.predictImage(captcha_path, 5)
 
         
         # Compare user's answer with AI's
@@ -388,6 +386,11 @@ def captcha():
         # Generate the CAPTCHA image and save it to disk
         generate_captcha_image_to_file(captcha_text, captcha_path)
 
+        global ai_thread
+        char_num = 5
+        ai_thread = ThreadAI(target=model.predictImage, args=(captcha_path, char_num,))
+        ai_thread.start()
+
         # Return the image to the client
         return send_file(captcha_path, mimetype='image/png')
 
@@ -447,14 +450,16 @@ def vs_ai():
 @app.route('/vs-ai/1-vs-AI')
 def one_vs_ai():
     return render_template('one_vs_ai.html')
+
 @app.route('/vs-ai/race-the-ai')
 def race_ai():
         # Initialize timer game session
     session['mode'] = 'AI racing'
-    session['timer'] = 10  # 60 seconds countdown
+    session['timer'] = 60  # 60 seconds countdown
     session['score'] = 0  # Track score
     session['ai_score'] = 0 #track ai score
     session['max_score'] = 0 #the max score
+    session['max_score_ai'] = 0 #the max score of the ai
     return render_template('race_ai.html')
 
 if __name__ == '__main__':
