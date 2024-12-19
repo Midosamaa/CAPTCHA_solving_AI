@@ -44,6 +44,9 @@
         </div>
         
         <section id="ai-stats" class="ai-stats">
+            <div>
+                <img id="ai-captcha-image" src="{{ url_for('captcha_ai') }}" alt="Captcha Image" />
+            </div>
             <h3>AI Stats</h3>
             <p><strong>AI Score:</strong> <span id="ai-score">{{ session['ai_score'] }}</span> / <span id="max-score2">{{ session['max_score']}}</span></p>
             <p><strong>AI Feedback:</strong> <span id="ai-feedback" style="color: blue;">Waiting...</span></p>
@@ -56,37 +59,42 @@
 
     <script>
         let timer = {{ session['timer'] }};
+        let game_over = false;
+        let aiInterval = null; // Declare aiInterval outside so we can clear it later
         const timerElement = document.getElementById('timer');
         const scoreElement = document.getElementById('score');
         const maxScoreElement = document.getElementById('max-score');
         const maxScore2Element = document.getElementById('max-score2');
         const aiScoreElement = document.getElementById('ai-score');
         const captchaImage = document.getElementById('captcha-image');
+        const aiCaptchaImage = document.getElementById('ai-captcha-image');
         const feedbackElement = document.getElementById('feedback');
         const aiFeedbackElement = document.getElementById('ai-feedback');
         const gameOverPopup = document.getElementById('game-over-popup-ai');
         const finalScoreElement = document.getElementById('final-score');
         const aiFinalScoreElement = document.getElementById('ai-final-score');
-    
+
         // Countdown logic
         const countdown = setInterval(() => {
             if (timer > 0) {
                 timer--;
                 timerElement.textContent = timer;
             } else {
+                game_over = true;
                 clearInterval(countdown);
                 showGameOverPopup();
+                clearInterval(aiInterval); // Stop AI updates when the game is over
             }
         }, 1000);
-    
+
         // AJAX submission for CAPTCHA form
         document.getElementById('captcha-form').addEventListener('submit', function(event) {
             event.preventDefault();  // Prevent default form submission
-    
+
             // Get user input
             const formData = new FormData(this);
-    
-            fetch('/vs-ai/verify', {
+
+            fetch('/vs-ai/verify-user', {
                 method: 'POST',
                 body: formData
             })
@@ -96,24 +104,23 @@
                     alert(data.error);
                     return;
                 }
-    
+
                 // Update score and feedback
                 feedbackElement.textContent = data.feedback;
                 scoreElement.textContent = data.score;
-                aiScoreElement.textContent = data.ai_score;
-                aiFeedbackElement.textContent = data.ai_feedback;
                 maxScoreElement.textContent = data.max_score;
-                maxScore2Element.textContent = data.max_score;
+
                 // Update CAPTCHA image
                 captchaImage.src = data.captcha_image;
 
                 // Reset input field after submission
                 document.querySelector('input[name="captcha_input"]').value = ''; // Clear input field
-    
-                // Check if the game is over (for some reason)
+
+                // Check if the game is over
                 if (data.game_over) {
                     clearInterval(countdown);
                     showGameOverPopup();
+                    clearInterval(aiInterval); // Stop AI updates when the game is over
                 }
             })
             .catch(error => {
@@ -121,20 +128,54 @@
                 alert('An error occurred. Please try again.');
             });
         });
-        
+
         // Function to show the game over popup
         function showGameOverPopup() {
             gameOverPopup.style.display = 'block';
-            // Use the score from the DOM element to display the final score
             finalScoreElement.textContent = scoreElement.textContent;
             aiFinalScoreElement.textContent = aiScoreElement.textContent;
         }
-
 
         // Function to restart the game
         function restartGame() {
             window.location.href = '/vs-ai/race-the-ai';  // Redirect to start a new game
         }
+
+        // Periodically fetch AI updates, but only if the game is not over
+        function fetchAIUpdates() {
+            if (game_over) {
+                clearInterval(aiInterval); // Stop fetching AI updates if the game is over
+                return;
+            }
+
+            fetch('/vs-ai/verify-ai', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    // Update AI feedback and score
+                    aiFeedbackElement.textContent = data.ai_feedback;
+                    aiScoreElement.textContent = data.ai_score;
+                    maxScore2Element.textContent = data.max_score_ai;
+
+                    // Update CAPTCHA image for AI
+                    aiCaptchaImage.src = data.captcha_image;
+                })
+                .catch(error => {
+                    console.error('Error fetching AI updates:', error);
+                });
+        }
+
+        // Trigger AI route after solving (simulate by calling periodically)
+        if (!game_over) {
+            aiInterval = setInterval(() => {
+                fetchAIUpdates();
+            }, 1000);  // Adjust interval based on AI solving speed
+        }
+
     </script>
 </body>
 </html>
