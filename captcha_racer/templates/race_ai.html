@@ -23,7 +23,7 @@
             <h2>AI Racing Mode</h2>
             <p>Time Remaining: <span id="timer">{{ session['timer'] }}</span> seconds</p>
             <p>Score: <span id="score">{{ session['score'] }}</span> / <span id="max-score">{{ session['max_score']}}</span></p>
-            
+            <h2>PROVE YOU ARE A F*CKING HUMAN!</h2>
             <div>
                 <img id="captcha-image" src="{{ url_for('captcha') }}" alt="Captcha Image" />
             </div>
@@ -37,6 +37,8 @@
 
             <div id="game-over-popup-ai" style="display: none;">
                 <h2>Game Over!</h2>
+                <p>You are a disgrace to humanity... >:(</p>
+                <p>Even our AI is better than you.</p>
                 <p>Your final score: <span id="final-score">{{ session['score'] }}</span></p>
                 <p>AI final score: <span id="ai-final-score">{{ session['ai_score'] }}</span></p>
                 <button class="button" onclick="restartGame()">Play Again</button>
@@ -173,7 +175,7 @@
         if (!game_over) {
             aiInterval = setInterval(() => {
                 fetchAIUpdates();
-            }, 1000);  // Adjust interval based on AI solving speed
+            }, 500);  // Adjust interval based on AI solving speed
         }
 
     </script>

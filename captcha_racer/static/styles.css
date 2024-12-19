@@ -229,8 +229,8 @@ form input {
     border-radius: 10px;
     text-align: center;
     z-index: 1000;
-    width: 15rem;
-    height: 15rem;
+    width: auto;
+    height: auto;
     align-items: center;
 }
 #game-over-popup-ai {
@@ -245,8 +245,8 @@ form input {
     border-radius: 10px;
     text-align: center;
     z-index: 1000;
-    width: 15rem;
-    height: 15rem;
+    width: auto;
+    height: auto;
     align-items: center;
 }
 /* AI Stats Card */

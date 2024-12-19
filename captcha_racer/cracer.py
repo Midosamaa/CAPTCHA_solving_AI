@@ -333,7 +333,7 @@ def verify():
 
         # Generate a new CAPTCHA
         session['captcha_text'] = generate_random_text()
-        new_captcha_url = url_for('captcha') + f'?v={random.randint(0, 100000)}'
+        new_captcha_url = url_for('captcha_solo') + f'?v={random.randint(0, 100000)}'
 
         # Return JSON response
         return jsonify({
@@ -346,6 +346,84 @@ def verify():
 
     except Exception as e:
         app.logger.error(f"Error in /verify route: {str(e)}", exc_info=True)
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/vs-ai/ai_challenge', methods=['POST'])
+def ai_challenge():
+    try:
+        if 'captcha_text' not in session or 'score' not in session or 'timer' not in session:
+            return jsonify({'error': 'Session data missing or expired'}), 400
+
+        user_input = request.form.get('captcha_input')
+        if not user_input:
+            return jsonify({'error': 'Captcha input is missing'}), 400
+        correct_captcha = session['captcha_text']
+        score = session['score']
+        ai_score = session['ai_score']
+        max_score = session['max_score']
+        timer = session['timer']
+        game_over = False
+        feedback = "Incorrect! Try again."
+        ai_feedback = "AI is solving captchas..."
+
+        # AI solving CAPTCHA
+        captcha_path = os.path.join(app.static_folder, 'images/captcha', f"{session['captcha_text']}.png")
+        ai_answer = model.predictImage(captcha_path, 5)
+        ai_answer = ai_thread.join()
+        # ai_answer = model.predictImage(captcha_path, 5)
+
+
+        # Compare user's answer with AI's
+        correct_letters_user = sum(1 for i in range(min(len(user_input), len(correct_captcha)))
+                                    if user_input[i] == correct_captcha[i])
+        correct_letters_ai = sum(1 for i in range(min(len(ai_answer), len(correct_captcha)))
+                                 if ai_answer[i] == correct_captcha[i])
+
+        # Update scores based on correctness
+        if correct_letters_user > 0:
+            score += correct_letters_user
+            feedback = f"Correct letters: {correct_letters_user}. Your score has increased."
+        else:
+            feedback = "No correct letters. Try again."
+
+        if correct_letters_ai > 0:
+            ai_score += correct_letters_ai
+            ai_feedback = f"AI solved {correct_letters_ai} correctly."
+        max_score += 5
+        session['score'] = score
+        session['ai_score'] = ai_score
+        session['max_score'] = max_score
+        # Decrease timer
+        # session['timer'] = timer - 1
+
+        print(session['timer'])
+        if session['timer'] <= 0:
+            game_over = True
+            feedback += " Time's up! Game over."
+            dir="static/images/captcha"
+            dir = '/home/midosama/Desktop/CAPTCHA_solving_AI/captcha_racer/static/images/captcha'
+            print(4)
+            shutil.rmtree(dir, ignore_errors=True)
+
+        feedback += f" The correct answer was: {correct_captcha}"
+        ai_feedback+=f"AI answered {ai_answer}"
+        # Generate a new CAPTCHA
+        session['captcha_text'] = generate_random_text()
+        new_captcha_url = url_for('captcha_facing') + f'?v={random.randint(0, 100000)}'
+
+        return jsonify({
+            'feedback': feedback,
+            'ai_feedback': ai_feedback,
+            'score': score,
+            'ai_score': ai_score,
+            'timer': session['timer'],
+            'game_over': game_over,
+            'captcha_image': new_captcha_url,
+            'max_score' : max_score
+        })
+
+    except Exception as e:
+        app.logger.error(f"Error in /vs-ai/verify route: {str(e)}", exc_info=True)
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
 
@@ -442,6 +520,52 @@ def captcha_ai():
         app.logger.error(f"Error generating AI CAPTCHA: {str(e)}")
         return jsonify({'error': 'Failed to generate AI CAPTCHA'}), 500
 
+@app.route('/captcha_facing')
+def captcha_facing():
+    try:
+        # Define the CAPTCHA directory path
+        captcha_dir = os.path.join(app.static_folder, 'images/captcha')
+
+        # Clear the directory before generating new CAPTCHA files
+        clear_directory(captcha_dir)
+
+        # Generate CAPTCHA text and store in session
+        captcha_text = session.setdefault('captcha_text', generate_random_text())
+
+        # Define the CAPTCHA file path
+        captcha_path = os.path.join(captcha_dir, f'{captcha_text}.png')
+
+        # Generate the CAPTCHA image and save it to disk
+        generate_captcha_image_to_file(captcha_text, captcha_path)
+
+        global ai_thread
+        char_num = 5
+        ai_thread = ThreadAI(target=model.predictImage, args=(captcha_path, char_num,))
+        ai_thread.start()
+        # Return the image to the client
+        return send_file(captcha_path, mimetype='image/png')
+
+    except Exception as e:
+        app.logger.error(f"Error generating CAPTCHA: {str(e)}")
+        return jsonify({'error': 'Failed to generate CAPTCHA'}), 500
+
+@app.route('/captcha_solo')
+def captcha_solo():
+    captcha_text = generate_random_text()  # Générer un texte aléatoire
+    session['captcha_text'] = captcha_text  # Stocker dans la session
+    img_io = generate_captcha_image(captcha_text)
+    return send_file(img_io, mimetype='image/png')
+    try:
+        captcha_text = generate_random_text()  # Générer un texte aléatoire
+        session['captcha_text'] = captcha_text  # Stocker dans la session
+        img_io = generate_captcha_image(captcha_text)  # Générer l'image
+        if not img_io:
+            raise ValueError("Failed to generate CAPTCHA image.")
+        app.logger.debug("Captcha image generated successfully.")
+        return send_file(img_io, mimetype='image/png')
+    except Exception as e:
+        app.logger.error(f"Error generating CAPTCHA: {str(e)}")
+        return jsonify({'error': 'Failed to generate CAPTCHA'}), 500
 # Route to handle CAPTCHA form submission
 @app.route('/validate-captcha', methods=['POST'])
 def validate_captcha():
@@ -498,7 +622,7 @@ def one_vs_ai():
 def race_ai():
         # Initialize timer game session
     session['mode'] = 'AI racing'
-    session['timer'] = 30  # 60 seconds countdown
+    session['timer'] = 120  # 60 seconds countdown
     session['score'] = 0  # Track score
     session['ai_score'] = 0 #track ai score
     session['max_score'] = 0 #the max score
@@ -507,5 +631,16 @@ def race_ai():
     session['user-captcha-text'] = generate_random_text()
     return render_template('race_ai.html')
 
+
+@app.route('/vs-ai/face-the-ai')
+def face_ai():
+        # Initialize timer game session
+    session['mode'] = 'AI facing'
+    session['timer'] = 100  # 60 seconds countdown
+    session['score'] = 0  # Track score
+    session['ai_score'] = 0 #track ai score
+    session['max_score'] = 0 #the max score
+    session['max_score_ai'] = 0 #the max score of the ai
+    return render_template('face_the_ai.html')
 if __name__ == '__main__':
     app.run(debug=True)
