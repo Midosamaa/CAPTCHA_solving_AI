@@ -5,6 +5,7 @@ import io
 from flask import Flask, render_template, redirect, url_for, request, session, send_file, jsonify
 from PIL import Image, ImageDraw, ImageFont
 from threading import Thread
+import shutil
 
 import ModelLoader
 
@@ -191,10 +192,10 @@ def verify_vs_ai():
         user_input = request.form.get('captcha_input')
         if not user_input:
             return jsonify({'error': 'Captcha input is missing'}), 400
-
         correct_captcha = session['captcha_text']
         score = session['score']
         ai_score = session['ai_score']
+        max_score = session['max_score']
         timer = session['timer']
         game_over = False
         feedback = "Incorrect! Try again."
@@ -204,7 +205,7 @@ def verify_vs_ai():
         captcha_path = os.path.join(app.static_folder, 'images/captcha', f"{session['captcha_text']}.png")
         ai_answer = model.predictImage(captcha_path, 5)
 
-
+        
         # Compare user's answer with AI's
         correct_letters_user = sum(1 for i in range(min(len(user_input), len(correct_captcha)))
                                     if user_input[i] == correct_captcha[i])
@@ -221,18 +222,24 @@ def verify_vs_ai():
         if correct_letters_ai > 0:
             ai_score += correct_letters_ai
             ai_feedback = f"AI solved {correct_letters_ai} correctly."
-
+        max_score += 5
         session['score'] = score
         session['ai_score'] = ai_score
-
+        session['max_score'] = max_score
         # Decrease timer
-        session['timer'] = timer - 1
+        # session['timer'] = timer - 1
 
+        print(session['timer'])
         if session['timer'] <= 0:
             game_over = True
             feedback += " Time's up! Game over."
-        feedback += f" The correct answer was: {correct_captcha}"
+            dir="static/images/captcha"
+            dir = '/home/midosama/Desktop/CAPTCHA_solving_AI/captcha_racer/static/images/captcha'
+            print(4)
+            shutil.rmtree(dir, ignore_errors=True)
 
+        feedback += f" The correct answer was: {correct_captcha}"
+        ai_feedback+=f"AI answered {ai_answer}"
         # Generate a new CAPTCHA
         session['captcha_text'] = generate_random_text()
         new_captcha_url = url_for('captcha') + f'?v={random.randint(0, 100000)}'
@@ -244,7 +251,8 @@ def verify_vs_ai():
             'ai_score': ai_score,
             'timer': session['timer'],
             'game_over': game_over,
-            'captcha_image': new_captcha_url
+            'captcha_image': new_captcha_url,
+            'max_score' : max_score
         })
 
     except Exception as e:
@@ -356,18 +364,28 @@ def survival_game(difficulty):
     
     return render_template('survival_game.html', difficulty=difficulty)
 
+def clear_directory(directory_path):
+    """Removes all files and subdirectories in the specified directory."""
+    if os.path.exists(directory_path):
+        shutil.rmtree(directory_path)  # Remove the directory and all its contents
+        os.makedirs(directory_path, exist_ok=True)  # Recreate the empty directory
+
 @app.route('/captcha')
 def captcha():
     try:
+        # Define the CAPTCHA directory path
+        captcha_dir = os.path.join(app.static_folder, 'images/captcha')
+        
+        # Clear the directory before generating new CAPTCHA files
+        clear_directory(captcha_dir)
+        
         # Generate CAPTCHA text and store in session
         captcha_text = session.setdefault('captcha_text', generate_random_text())
-
-        # Generate CAPTCHA image and save to static folder
-        captcha_dir = os.path.join(app.static_folder, 'images/captcha')
-        os.makedirs(captcha_dir, exist_ok=True)
+        
+        # Define the CAPTCHA file path
         captcha_path = os.path.join(captcha_dir, f'{captcha_text}.png')
 
-        # Generate the image and save it to disk
+        # Generate the CAPTCHA image and save it to disk
         generate_captcha_image_to_file(captcha_text, captcha_path)
 
         # Return the image to the client
@@ -433,9 +451,10 @@ def one_vs_ai():
 def race_ai():
         # Initialize timer game session
     session['mode'] = 'AI racing'
-    session['timer'] = 60  # 60 seconds countdown
+    session['timer'] = 10  # 60 seconds countdown
     session['score'] = 0  # Track score
-    session['AI_score'] = 0 #track ai score
+    session['ai_score'] = 0 #track ai score
+    session['max_score'] = 0 #the max score
     return render_template('race_ai.html')
 
 if __name__ == '__main__':

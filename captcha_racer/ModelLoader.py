@@ -183,8 +183,3 @@ class ModelLoader:
         return predict_text #, target text
 
 
-if __name__ == "__main__":
-    model = ModelLoader("Checkpoint.pth")
-    pred = model.predictImage("caps/baI05.png")
-    print(pred)
-

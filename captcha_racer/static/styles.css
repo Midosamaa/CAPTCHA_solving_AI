@@ -265,8 +265,14 @@ form input {
     font-size: 14px;
 }
 
+.ai-stats h3 {
+    color: #495057;
+}
+
 .ai-stats p {
     margin: 5px 0;
+    color: #343a40;
+
 }
 
 .ai-stats strong {

@@ -22,7 +22,7 @@
         <div id="game-area">
             <h2>AI Racing Mode</h2>
             <p>Time Remaining: <span id="timer">{{ session['timer'] }}</span> seconds</p>
-            <p>Score: <span id="score">{{ session['score'] }}</span></p>
+            <p>Score: <span id="score">{{ session['score'] }}</span> / <span id="max-score">{{ session['max_score']}}</span></p>
             
             <div>
                 <img id="captcha-image" src="{{ url_for('captcha') }}" alt="Captcha Image" />
@@ -45,7 +45,7 @@
         
         <section id="ai-stats" class="ai-stats">
             <h3>AI Stats</h3>
-            <p><strong>AI Score:</strong> <span id="ai-score">{{ session['ai_score'] }}</span></p>
+            <p><strong>AI Score:</strong> <span id="ai-score">{{ session['ai_score'] }}</span> / <span id="max-score2">{{ session['max_score']}}</span></p>
             <p><strong>AI Feedback:</strong> <span id="ai-feedback" style="color: blue;">Waiting...</span></p>
         </section>
     </main>
@@ -58,6 +58,8 @@
         let timer = {{ session['timer'] }};
         const timerElement = document.getElementById('timer');
         const scoreElement = document.getElementById('score');
+        const maxScoreElement = document.getElementById('max-score');
+        const maxScore2Element = document.getElementById('max-score2');
         const aiScoreElement = document.getElementById('ai-score');
         const captchaImage = document.getElementById('captcha-image');
         const feedbackElement = document.getElementById('feedback');
@@ -100,7 +102,8 @@
                 scoreElement.textContent = data.score;
                 aiScoreElement.textContent = data.ai_score;
                 aiFeedbackElement.textContent = data.ai_feedback;
-
+                maxScoreElement.textContent = data.max_score;
+                maxScore2Element.textContent = data.max_score;
                 // Update CAPTCHA image
                 captchaImage.src = data.captcha_image;
 
@@ -124,6 +127,7 @@
             gameOverPopup.style.display = 'block';
             // Use the score from the DOM element to display the final score
             finalScoreElement.textContent = scoreElement.textContent;
+            aiFinalScoreElement.textContent = aiScoreElement.textContent;
         }
 
 
