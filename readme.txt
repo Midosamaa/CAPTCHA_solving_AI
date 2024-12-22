@@ -45,3 +45,5 @@ For the captcha training:
 	
 NOTA:
 	this project is still under developpement and some functionnalities in the captcha racer game are still to be updated and a multiplayer mode is coming up soon... stay tuned.
+	
+	the list of fonts used could be changed... we only removed a list of broken fonts that were broken.
