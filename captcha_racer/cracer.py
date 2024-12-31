@@ -127,7 +127,11 @@ def generate_captcha_image(captcha_text, width=150, height=50, char_spacing=10):
             font = ImageFont.load_default()
         
         # Calculate the width of the current character and add it to the total width
-        text_width, text_height = draw.textsize(char, font=font)
+        # text_width, text_height = draw.textlength(char, font=font)
+        bbox = draw.textbbox((0, 0), char, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
         total_text_width += text_width
     
     # Add spacing between the characters
@@ -145,7 +149,11 @@ def generate_captcha_image(captcha_text, width=150, height=50, char_spacing=10):
             font = ImageFont.load_default()
         
         # Calculate the text size for the current character
-        text_width, text_height = draw.textsize(char, font=font)
+        # text_width, text_height = draw.textlength(char, font=font)
+        bbox = draw.textbbox((0, 0), char, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
         
         # Calculate y-position to center the text vertically
         y_position = (height - text_height) // 2
@@ -622,7 +630,7 @@ def one_vs_ai():
 def race_ai():
         # Initialize timer game session
     session['mode'] = 'AI racing'
-    session['timer'] = 120  # 60 seconds countdown
+    session['timer'] = 30  # 60 seconds countdown
     session['score'] = 0  # Track score
     session['ai_score'] = 0 #track ai score
     session['max_score'] = 0 #the max score
@@ -636,7 +644,7 @@ def race_ai():
 def face_ai():
         # Initialize timer game session
     session['mode'] = 'AI facing'
-    session['timer'] = 100  # 60 seconds countdown
+    session['timer'] = 60  # 60 seconds countdown
     session['score'] = 0  # Track score
     session['ai_score'] = 0 #track ai score
     session['max_score'] = 0 #the max score

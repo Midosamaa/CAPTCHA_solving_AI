@@ -141,6 +141,7 @@ class ModelLoader:
         # self.optimizer = Lion(self.model.parameters(), lr=lr, weight_decay=1e-2)
 
         checkpoint = torch.load(checkpointPath, map_location=self.device, weights_only=True)
+        # checkpoint = torch.load(checkpointPath, map_location=self.device)
         self.model.load_state_dict(checkpoint["model_state_dict"])
         # self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
