@@ -44,6 +44,27 @@ For the captcha training:
 	you can also check the file used for generating datasets "gen_cap.py"
 	
 NOTA:
+----
 	this project is still under developpement and some functionnalities in the captcha racer game are still to be updated and a multiplayer mode is coming up soon... stay tuned.
 	
 	the list of fonts used could be changed... we only removed a list of broken fonts that were broken.
+	
+	
+Game rules:
+----------
+	This game is pretty straight forward, you need to solve captchas correctly, as precisely and as fast as possible.
+	Each time you run a game, you will be presented with an image dispalying a 5 chars captcha, below which you will see a text box where you need to enter your answer for the captcha.
+	Your score will be updated according to your answer depending on the mode you chose.
+	
+Modes:
+-----
+	In this game you have two major modes:
+	- Solo mode: in this mode you have two game modes as well:
+		- Survival mode: in this mode you can choose among three difficulties (easy, medium and hard), each giving you a fixed amount of lives (resp 5, 3 and 1) that will break whenever you make a mistake (aka enter a wrong captcha).
+			Whenever you enter a correct captcha (case sensitive) your score will increase by 5. Otherwise, you will lose a life.
+		- Timer challenge: in this mode your goal is again to score as high a score as possible, however, this time since you are running against a clock, your score is gonna increase by 1 for each correctly placed character (case sensitive).
+	- Versus AI mode: in this mode you can challenge the captcha soving ai we created, and you can do so in two different modes:
+		-Face the ai:
+		-Race the ai:
+		
+			
