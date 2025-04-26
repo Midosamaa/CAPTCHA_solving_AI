@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 def get_font_paths():
     # Base font directory
+<<<<<<< HEAD
     base_dir = "/usr/share/fonts/truetype"
     
     # List to store paths of all compatible .ttf fonts
@@ -35,6 +36,12 @@ def get_font_paths():
     "/usr/share/fonts/truetype/malayalam/RaghuMalayalamSans-Regular.ttf",
     "/usr/share/fonts/truetype/teluguvijayam/RaviPrakash.ttf",
     "/usr/share/fonts/truetype/Navilu/Navilu.ttf"]
+=======
+    base_dir = "/usr/share/fonts/captcha_fonts"
+    
+    # List to store paths of all compatible .ttf fonts
+    font_list = []
+>>>>>>> master
 
     # Loop over each directory in the base font directory
     for root, dirs, files in os.walk(base_dir):
@@ -47,8 +54,12 @@ def get_font_paths():
                 # Test loading the font to ensure compatibility
                 try:
                     ImageFont.truetype(font_path, 20)
+<<<<<<< HEAD
                     if font_path not in brokenfonts:
                         font_list.append(font_path)  # Add only if it loads successfully
+=======
+                    font_list.append(font_path)  # Add only if it loads successfully
+>>>>>>> master
                 except IOError:
                     pass
     

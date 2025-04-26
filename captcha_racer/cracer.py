@@ -52,36 +52,10 @@ app.secret_key = "your_secret_key"
 
 def get_font_paths():
     # Base font directory
-    base_dir = "/usr/share/fonts/truetype"
+    base_dir = "../fonts/captcha_fonts"
     
     # List to store paths of all compatible .ttf fonts
     font_list = []
-    brokenfonts = [
-    "/usr/share/fonts/truetype/samyak/Samyak-Devanagari.ttf",
-    "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
-    "/usr/share/fonts/truetype/libreoffice/opens___.ttf",
-    "/usr/share/fonts/truetype/Gubbi/Gubbi.ttf",
-    "/usr/share/fonts/truetype/sinhala/lklug.ttf",
-    "/usr/share/fonts/truetype/teluguvijayam/Ponnala.ttf",
-    "/usr/share/fonts/truetype/teluguvijayam/LakkiReddy.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstDigital.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstPen.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstTitle.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstTitleL.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstFarsi.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstPoster.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstDecorative.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstScreen.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstOffice.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstBook.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstArt.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstQurn.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstLetter.ttf",
-    "/usr/share/fonts/truetype/kacst/mry_KacstQurn.ttf",
-    "/usr/share/fonts/truetype/kacst/KacstNaskh.ttf",
-    "/usr/share/fonts/truetype/malayalam/RaghuMalayalamSans-Regular.ttf",
-    "/usr/share/fonts/truetype/teluguvijayam/RaviPrakash.ttf",
-    "/usr/share/fonts/truetype/Navilu/Navilu.ttf"]
 
     # Loop over each directory in the base font directory
     for root, dirs, files in os.walk(base_dir):
@@ -94,8 +68,7 @@ def get_font_paths():
                 # Test loading the font to ensure compatibility
                 try:
                     ImageFont.truetype(font_path, 20)
-                    if font_path not in brokenfonts:
-                        font_list.append(font_path)  # Add only if it loads successfully
+                    font_list.append(font_path)  # Add only if it loads successfully
                 except IOError:
                     pass
     
